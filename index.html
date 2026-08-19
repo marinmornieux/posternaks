@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<title>Posternaks</title>
+<meta name="description" content="Zhenya and Tanya Posternak — photographers. Kyiv, New York, Paris.">
+<meta property="og:title" content="Posternaks">
+<meta property="og:description" content="Zhenya and Tanya Posternak — photographers.">
+<meta property="og:image" content="images/1.jpg">
+<link rel="preload" as="image" href="images/1.jpg">
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#1a1a1a;
+    --muted:#8a877f;
+    --gap:min(5vh, 40px);
+    --edge:clamp(20px, 5vw, 64px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{
+    -webkit-text-size-adjust:100%;   /* iOS: never auto-rescale text */
+    text-size-adjust:100%;
+    background:#ffffff;              /* fills any over-scroll area */
+    overscroll-behavior:none;
+  }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:Arial, sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+    /* respect the notch in landscape; portrait insets are 0 */
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+  }
+  a{color:inherit;text-decoration:none}
+  img{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+
+  /* ---- Intro stage: title centered, about sits just behind it ---- */
+  .intro{
+    position:relative;
+    height:100svh;min-height:520px;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;
+    padding:calc(var(--edge) + env(safe-area-inset-top)) var(--edge) calc(var(--edge) + env(safe-area-inset-bottom));
+  }
+  .intro h1{
+    font-weight:400;
+    font-size:clamp(11px, 1.4vw, 14px);
+    letter-spacing:0;
+    line-height:1;
+    text-transform:uppercase;
+    color:#000;                 /* opens full black, stays black until scroll */
+    will-change:opacity;
+  }
+
+  /* About block — placed just below the title, hidden until scroll. */
+  .about-block{
+    position:absolute;left:0;right:0;top:57%;
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;
+    padding:0 var(--edge);
+    opacity:0;will-change:opacity;
+  }
+  .about-block .contact{margin-top:22px}
+
+  /* ---- Feed ---- */
+  main{padding-bottom:calc(var(--gap) + env(safe-area-inset-bottom))}
+  figure{
+    display:flex;align-items:center;justify-content:center;
+    padding:0 var(--edge);
+    margin:var(--gap) 0;
+  }
+  figure img{
+    display:block;
+    max-width:100%;
+    max-height:90svh;         /* never cropped: fits within viewport */
+    width:auto;height:auto;
+    object-fit:contain;
+    opacity:0;
+    transition:opacity .28s ease;   /* quick fade only, no movement */
+  }
+  figure img.in{opacity:1}
+
+  /* ---- About ---- */
+  .about{
+    max-width:none;
+    font-size:clamp(11px,1.4vw,13px);
+    line-height:1.6;
+  }
+  .contact{
+    font-size:9px;letter-spacing:0;text-transform:uppercase;
+    color:var(--muted);
+    line-height:2.2;
+  }
+  .contact .label{display:block;font-size:8px;letter-spacing:0;margin-top:20px;color:#bdb9b0}
+  .contact a{border-bottom:1px solid transparent;transition:border-color .3s ease,color .3s ease}
+  .contact a:hover{color:var(--ink);border-color:var(--ink)}
+  .colophon{
+    margin-top:12px;font-size:8px;letter-spacing:0;text-transform:uppercase;color:#c3bfb6;
+  }
+
+  @media (max-width:640px){
+    :root{--gap:min(3.5vh,26px)}
+    figure{padding:0}            /* full-bleed: photos span the screen edge-to-edge */
+    figure img{max-height:88svh}
+  }
+  @media (prefers-reduced-motion:reduce){
+    figure img,.about-block{opacity:1;transform:none;transition:none}
+  }
+</style>
+</head>
+<body>
+
+<section class="intro" id="top">
+  <h1>Posternaks</h1>
+  <div class="about-block">
+  <p class="about">
+    Zhenya and Tanya Posternak, twin&#8209;sisters from Kyiv, Ukraine.
+    Currently based in New York and Paris.
+  </p>
+  <div class="contact">
+    <a href="mailto:hello@posternaks.com">hello@posternaks.com</a>
+    <span class="label"></span>
+    <a href="mailto:sarah.bryant@minititle.com">sarah.bryant@minititle.com</a><br>
+    <a href="mailto:chris.mcguigan@minititle.com">chris.mcguigan@minititle.com</a>
+  </div>
+  </div>
+</section>
+
+<main id="work"></main>
+
+<script>
+  // Curated sequence — interleaves vertical, horizontal and square frames for rhythm.
+  var ORDER = [1,8,30,9,13,3,18,25,11,6,19,16,24,33,35,10,26,22,12,5,21,27,29,20,31,17,15,32,7,14,23,34,2,28,4];
+
+  var main = document.getElementById('work');
+  var frag = document.createDocumentFragment();
+  ORDER.forEach(function(n, i){
+    var fig = document.createElement('figure');
+    var img = document.createElement('img');
+    img.src = 'images/' + n + '.jpg';
+    img.alt = 'Posternak — photograph ' + (i+1);
+    img.loading = i < 2 ? 'eager' : 'lazy';
+    img.decoding = 'async';
+    fig.appendChild(img);
+    frag.appendChild(fig);
+  });
+  main.appendChild(frag);
+
+  // Gentle fade-in as each frame enters the viewport.
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:0.06});
+    document.querySelectorAll('figure img').forEach(function(img){ io.observe(img); });
+  } else {
+    document.querySelectorAll('figure img').forEach(function(img){ img.classList.add('in'); });
+  }
+
+  // First scroll: the centered title fades out while the about block,
+  // sitting just behind it, fades in — both riding up with the page.
+  var title = document.querySelector('.intro h1');
+  var about = document.querySelector('.about-block');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function onScroll(){
+    var y = window.scrollY, h = window.innerHeight;
+    var tv = Math.min(1, y / (h * 0.14));   // title: gone very quickly
+    var av = Math.min(1, y / (h * 0.55));   // about: arrives more gradually, after
+    title.style.opacity = String(1 - tv);
+    about.style.opacity = String(av);
+  }
+  if (reduce){
+    title.style.opacity = '1';
+    about.style.opacity = '1';
+  } else {
+    window.addEventListener('scroll', function(){ requestAnimationFrame(onScroll); }, {passive:true});
+    onScroll();
+  }
+</script>
+</body>
+</html>
