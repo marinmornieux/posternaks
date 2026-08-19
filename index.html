@@ -185,10 +185,19 @@
   var title = document.querySelector('.intro h1');
   var about = document.querySelector('.about-block');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var mobile = window.matchMedia && window.matchMedia('(max-width:640px)').matches;
+  // On phones a flick travels far and fast, so both fades must resolve within
+  // the first micro-scroll — while the text is still centred, not stuck up top.
+  var TITLE_D = mobile ? 0.05 : 0.14;   // screen-fraction to finish title fade-out
+  var ABOUT_D = mobile ? 0.11 : 0.55;   // screen-fraction to finish about fade-in
+  // easeOutExpo: almost fully resolved on the very first movement down.
+  function ease(t){ return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t); }
   function onScroll(){
     var y = window.scrollY, h = window.innerHeight;
-    var tv = Math.min(1, y / (h * 0.14));   // title: gone very quickly
-    var av = Math.min(1, y / (h * 0.55));   // about: arrives more gradually, after
+    var tRaw = Math.min(1, y / (h * TITLE_D));
+    var aRaw = Math.min(1, y / (h * ABOUT_D));
+    var tv = mobile ? ease(tRaw) : tRaw;
+    var av = mobile ? ease(aRaw) : aRaw;
     title.style.opacity = String(1 - tv);
     about.style.opacity = String(av);
   }
