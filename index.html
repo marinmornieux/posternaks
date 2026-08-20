@@ -73,17 +73,21 @@
     letter-spacing:0;
     line-height:1;
     text-transform:uppercase;
-    color:#000;                 /* opens full black, stays black until scroll */
+    color:#000;                 /* opens full black, holds for a beat, then fades */
     will-change:opacity;
+    transition:opacity .8s ease;
   }
 
-  /* About block — placed just below the title, hidden until scroll. */
+  /* About block — centered in the same spot as the title, revealed after the
+     title fades. */
   .about-block{
-    position:absolute;left:0;right:0;top:57%;
+    position:absolute;left:0;right:0;top:50%;
+    transform:translateY(-50%);
     display:flex;flex-direction:column;align-items:center;
     text-align:center;
     padding:0 var(--edge);
     opacity:0;will-change:opacity;
+    transition:opacity .8s ease;
   }
   .about-block .contact{margin-top:22px}
 
@@ -129,7 +133,8 @@
     figure img{max-height:88svh}
   }
   @media (prefers-reduced-motion:reduce){
-    figure img,.about-block{opacity:1;transform:none;transition:none}
+    figure img{opacity:1;transform:none;transition:none}
+    .about-block{opacity:1;transition:none}
   }
 </style>
 </head>
@@ -183,33 +188,20 @@
     document.querySelectorAll('figure img').forEach(function(img){ img.classList.add('in'); });
   }
 
-  // First scroll: the centered title fades out while the about block,
-  // sitting just behind it, fades in — both riding up with the page.
+  // On load the title opens centered and holds for a beat, then fades out
+  // while the about block — centered in the same spot — fades in.
   var title = document.querySelector('.intro h1');
   var about = document.querySelector('.about-block');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var mobile = window.matchMedia && window.matchMedia('(max-width:640px)').matches;
-  // On phones a flick travels far and fast, so both fades must resolve within
-  // the first micro-scroll — while the text is still centred, not stuck up top.
-  var TITLE_D = mobile ? 0.05 : 0.14;   // screen-fraction to finish title fade-out
-  var ABOUT_D = mobile ? 0.11 : 0.55;   // screen-fraction to finish about fade-in
-  // easeOutExpo: almost fully resolved on the very first movement down.
-  function ease(t){ return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t); }
-  function onScroll(){
-    var y = window.scrollY, h = window.innerHeight;
-    var tRaw = Math.min(1, y / (h * TITLE_D));
-    var aRaw = Math.min(1, y / (h * ABOUT_D));
-    var tv = mobile ? ease(tRaw) : tRaw;
-    var av = mobile ? ease(aRaw) : aRaw;
-    title.style.opacity = String(1 - tv);
-    about.style.opacity = String(av);
-  }
   if (reduce){
-    title.style.opacity = '1';
+    // Skip the timed cross-fade; land straight on the about block.
+    title.style.opacity = '0';
     about.style.opacity = '1';
   } else {
-    window.addEventListener('scroll', function(){ requestAnimationFrame(onScroll); }, {passive:true});
-    onScroll();
+    setTimeout(function(){
+      title.style.opacity = '0';
+      about.style.opacity = '1';
+    }, 1000);
   }
 </script>
 </body>
