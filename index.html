@@ -115,6 +115,7 @@
     font-size:clamp(11px,1.4vw,13px);
     line-height:1.6;
   }
+  .mobile-break{display:none}   /* line break after "Ukraine." on phones only */
   .contact{
     font-size:9px;letter-spacing:0;text-transform:uppercase;
     color:var(--muted);
@@ -128,9 +129,10 @@
   }
 
   @media (max-width:640px){
-    :root{--gap:min(3.5vh,26px)}
+    :root{--gap:min(2vh,14px)}   /* tighter vertical rhythm between frames on phones */
     figure{padding:0}            /* full-bleed: photos span the screen edge-to-edge */
     figure img{max-height:88svh}
+    .mobile-break{display:inline}
   }
   @media (prefers-reduced-motion:reduce){
     figure img{opacity:1;transform:none;transition:none}
@@ -144,7 +146,7 @@
   <h1>Posternaks</h1>
   <div class="about-block">
   <p class="about">
-    Zhenya and Tanya Posternak, twin&#8209;sisters from Kyiv, Ukraine.
+    Zhenya and Tanya Posternak, twin&#8209;sisters from Kyiv, Ukraine.<br class="mobile-break">
     Currently based in New York and Paris.
   </p>
   <div class="contact">
