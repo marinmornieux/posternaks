@@ -199,15 +199,39 @@
 
   // On load the title materialises out of a blur and holds sharp; then it
   // blurs away while the about block — centered in the same spot — blurs in.
+  var intro = document.querySelector('.intro');
   var title = document.querySelector('.intro h1');
   var about = document.querySelector('.about-block');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  var showingAbout = false;
+  function showAbout(){
+    showingAbout = true;
+    title.style.opacity = '0'; title.style.filter = 'blur(6px)'; title.style.pointerEvents = 'none';
+    about.style.opacity = '1'; about.style.filter = 'blur(0px)'; about.style.pointerEvents = 'auto';
+  }
+  function showTitle(){
+    showingAbout = false;
+    title.style.opacity = '1'; title.style.filter = 'blur(0px)'; title.style.pointerEvents = 'auto';
+    about.style.opacity = '0'; about.style.filter = 'blur(6px)'; about.style.pointerEvents = 'none';
+  }
+
+  // Once revealed, tapping the intro's empty space blurs between the title
+  // and the about block. Real links (emails, Instagram) still work.
+  function enableToggle(){
+    intro.addEventListener('click', function(e){
+      if (e.target.closest('a')) return;   // let links through
+      showingAbout ? showTitle() : showAbout();
+    });
+  }
+
   if (reduce){
     // No motion: land straight on the sharp about block.
-    title.style.opacity = '0'; title.style.filter = 'blur(0px)';
-    about.style.opacity = '1'; about.style.filter = 'blur(0px)';
+    showAbout();
+    enableToggle();
   } else {
     var HOLD = 1000, DUR = 800;
+    about.style.pointerEvents = 'none';   // transparent to clicks while hidden
     // Commit the blurred starting paint, then let the title blur into focus.
     title.getBoundingClientRect();
     setTimeout(function(){
@@ -215,8 +239,8 @@
     }, 40);
     // After it holds, the title blurs out as the about block blurs in.
     setTimeout(function(){
-      title.style.opacity = '0'; title.style.filter = 'blur(6px)';
-      about.style.opacity = '1'; about.style.filter = 'blur(0px)';
+      showAbout();
+      enableToggle();
     }, DUR + HOLD);
   }
 </script>
