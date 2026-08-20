@@ -73,21 +73,23 @@
     letter-spacing:0;
     line-height:1;
     text-transform:uppercase;
-    color:#000;                 /* opens full black, holds for a beat, then fades */
-    will-change:opacity;
-    transition:opacity .8s ease;
+    color:#000;                 /* opens from a blur, holds sharp, then blurs away */
+    opacity:0;filter:blur(6px);
+    will-change:opacity,filter;
+    transition:opacity .8s ease, filter .8s ease;
   }
 
-  /* About block — centered in the same spot as the title, revealed after the
-     title fades. */
+  /* About block — centered in the same spot as the title, revealed as the
+     title blurs away. */
   .about-block{
     position:absolute;left:0;right:0;top:50%;
     transform:translateY(-50%);
     display:flex;flex-direction:column;align-items:center;
     text-align:center;
     padding:0 var(--edge);
-    opacity:0;will-change:opacity;
-    transition:opacity .8s ease;
+    opacity:0;filter:blur(6px);
+    will-change:opacity,filter;
+    transition:opacity .8s ease, filter .8s ease;
   }
   .about-block .contact{margin-top:22px}
 
@@ -136,7 +138,8 @@
   }
   @media (prefers-reduced-motion:reduce){
     figure img{opacity:1;transform:none;transition:none}
-    .about-block{opacity:1;transition:none}
+    .intro h1{transition:none}
+    .about-block{opacity:1;filter:none;transition:none}
   }
 </style>
 </head>
@@ -154,6 +157,10 @@
     <span class="label"></span>
     <a href="mailto:sarah.bryant@minititle.com">sarah.bryant@minititle.com</a><br>
     <a href="mailto:chris.mcguigan@minititle.com">chris.mcguigan@minititle.com</a>
+  </div>
+  <div class="contact">
+    <a href="https://instagram.com/zposternak" target="_blank" rel="noopener">instagram/zposternak</a><br>
+    <a href="https://instagram.com/tanyaposternak" target="_blank" rel="noopener">instagram/tanyaposternak</a>
   </div>
   </div>
 </section>
@@ -190,20 +197,27 @@
     document.querySelectorAll('figure img').forEach(function(img){ img.classList.add('in'); });
   }
 
-  // On load the title opens centered and holds for a beat, then fades out
-  // while the about block — centered in the same spot — fades in.
+  // On load the title materialises out of a blur and holds sharp; then it
+  // blurs away while the about block — centered in the same spot — blurs in.
   var title = document.querySelector('.intro h1');
   var about = document.querySelector('.about-block');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   if (reduce){
-    // Skip the timed cross-fade; land straight on the about block.
-    title.style.opacity = '0';
-    about.style.opacity = '1';
+    // No motion: land straight on the sharp about block.
+    title.style.opacity = '0'; title.style.filter = 'blur(0px)';
+    about.style.opacity = '1'; about.style.filter = 'blur(0px)';
   } else {
+    var HOLD = 1000, DUR = 800;
+    // Commit the blurred starting paint, then let the title blur into focus.
+    title.getBoundingClientRect();
     setTimeout(function(){
-      title.style.opacity = '0';
-      about.style.opacity = '1';
-    }, 1000);
+      title.style.opacity = '1'; title.style.filter = 'blur(0px)';
+    }, 40);
+    // After it holds, the title blurs out as the about block blurs in.
+    setTimeout(function(){
+      title.style.opacity = '0'; title.style.filter = 'blur(6px)';
+      about.style.opacity = '1'; about.style.filter = 'blur(0px)';
+    }, DUR + HOLD);
   }
 </script>
 </body>
